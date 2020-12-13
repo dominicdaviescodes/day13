@@ -8,6 +8,13 @@ textarea.focus();
 textarea.addEventListener('keyup', (e) => {
   // this is whatever we type in textarea
   createTags(e.target.value);
+  // if we hit enter wait 10ms, then clear the input value
+  if (e.key === 'Enter') {
+    setTimeout(() => {
+      e.target.value = '';
+    }, 10);
+    randomSelect();
+  }
 });
 
 function createTags(input) {
@@ -21,10 +28,47 @@ function createTags(input) {
   // clear the textarea
   tagsEl.innerHTML = '';
 
-  tags.forEach(tag => {
-    const tagEl = document.createElement('span')
-    tagEl.classList.add('tag')
+  tags.forEach((tag) => {
+    const tagEl = document.createElement('span');
+    tagEl.classList.add('tag');
     tagEl.innerText = tag;
     tagsEl.appendChild(tagEl);
   });
+}
+
+function randomSelect() {
+  const times = 30;
+
+  // every 100ms -  the flashing effect on choices tags
+  const interval = setInterval(() => {
+    const randomTag = pickRandomTag();
+    highlightTag(randomTag);
+    setTimeout(() => {
+      unHighlightTag(randomTag);
+    }, 100);
+  }, 100);
+  // stop and pick a tag
+  setTimeout(() => {
+    clearInterval(interval);
+
+    setTimeout(() => {
+      const randomTag = pickRandomTag();
+      highlightTag(randomTag);
+    }, 100);
+  }, times * 100);
+}
+
+function pickRandomTag() {
+  // get all elements with class of tag
+  const tags = document.querySelectorAll('.tag');
+  // get a random one
+  return tags[Math.floor(Math.random() * tags.length)];
+}
+
+function highlightTag(tag) {
+  tag.classList.add('highlight');
+}
+
+function unHighlightTag(tag) {
+  tag.classList.remove('highlight');
 }
